@@ -13,5 +13,8 @@ function [classes] = classification(caracteristiques)
         
         classes(k).position = '/\';
     end
+    
+    
+    
 end
 
