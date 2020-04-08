@@ -1,4 +1,6 @@
-image=double(imread('capture200.jpg'))/255;
+clear all;
+close all;
+image=double(imread('../../images/capture200.jpg'))/255;
 img=rgb2gray(image);
 moyenne=median(median(img));
  for i=1:size(img,1)
