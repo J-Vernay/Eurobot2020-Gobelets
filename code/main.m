@@ -24,9 +24,10 @@ viderDossier('../resultats/pretraitement');
 imagesPretraitees = zeros([ dimensions, nbImages]);
 for i = 1:nbImages
     fprintf('Prétraitement %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    [imagesPretraitees(:,:,:,i),mask] = pretraitement(images(:,:,:,i), 'rgb');
-    imwrite(imagesPretraitees(:,:,:,i), sprintf('../resultats/pretraitement/%s.jpg', nomsFichiers(i)));
-    imwrite(mask, sprintf('../resultats/pretraitement/_mask_%s.png', nomsFichiers(i)));
+    [imagesPretraitees(:,:,:,i),mask] = pretraitement(images(:,:,:,i), 'lab');
+    imwrite(imagesPretraitees(:,:,:,i), sprintf('../resultats/pretraitement/prtrt_%s.jpg', nomsFichiers(i)));
+    imwrite(mask, sprintf('../resultats/pretraitement/mask_%s.png', nomsFichiers(i)));
+    imwrite(~mask .* images(:,:,:,i), sprintf('../resultats/pretraitement/inv_%s.png', nomsFichiers(i)));
 end
 
 %% Extraction des caractéristiques
