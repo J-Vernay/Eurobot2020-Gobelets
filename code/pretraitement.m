@@ -45,8 +45,8 @@ function [imagePretraitee, mask] = pretraitement(image, espaceUtilise)
         B = lab(:,:,3);
         
         mask = B > 0.2*min(B(:)) & abs(A) > 0.3*max(abs(A(:)));
-        mask = imclose(mask, strel('disk',2));
-        mask = imopen(mask, strel('disk',3));
+        mask = imclose(mask, strel('disk',1));
+        mask = imopen(mask, strel('disk',1));
     else
         error("[pretraitement] '%s' n'est pas un espace couleur possible. Possibles : 'rgb', 'hsv', 'lab'", espaceUtilise);
     end
