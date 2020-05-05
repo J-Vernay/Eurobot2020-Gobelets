@@ -38,7 +38,7 @@ caracteristiques = cell(nbImages, 1);
 
 for i = 1:nbImages
     fprintf('Extraction %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    caracteristiques{i} = extraction(imagesPretraitees(:,:,i));
+    caracteristiques{i} = extraction(imagesPretraitees(:,:,:,i));
     writetable(struct2table(caracteristiques{i}), sprintf('../resultats/caracteristiques/%s.txt',nomsFichiers(i)));
 end
 
