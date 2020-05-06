@@ -19,10 +19,9 @@ function [caracteristiques] = extraction(imagePretraitee)
     %% Opérations morphologiques
     contourext=imdilate(img,strel('disk',1));
     contourext=contourext-img; 
-
     lpe=imfill(contourext,'holes');
     lpe=tse_imsplitobjects(logical(lpe));
-    lpe=imopen(lpe, strel('disk',2));
+    lpe=imopen(lpe, strel('disk',4));
     subplot(1,2,2);imshow(lpe,[]);
     
 %%   
