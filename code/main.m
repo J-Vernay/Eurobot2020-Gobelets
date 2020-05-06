@@ -1,11 +1,11 @@
 %% Projet Couleur P004 - Fort Bayard
- 
+clear all; close all;
 if ~isfolder('../resultats')
     mkdir('../resultats');
 end
 
 %% Chargement de la base d'image
-
+Espace = 'lab';
 fichiers = dir('../images/*.jpg');
 dimensions = [ 480, 720, 3 ];
 nbImages = 1;
@@ -24,7 +24,7 @@ viderDossier('../resultats/pretraitement');
 imagesPretraitees = zeros([ dimensions, nbImages]);
 for i = 1:nbImages
     fprintf('Prétraitement %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    [imagesPretraitees(:,:,:,i),mask] = pretraitement(images(:,:,:,i), 'lab');
+    [imagesPretraitees(:,:,:,i),mask] = pretraitement(images(:,:,:,i), Espace);
     imwrite(imagesPretraitees(:,:,:,i), sprintf('../resultats/pretraitement/prtrt_%s.jpg', nomsFichiers(i)));
     imwrite(mask, sprintf('../resultats/pretraitement/mask_%s.png', nomsFichiers(i)));
     imwrite(~mask .* images(:,:,:,i), sprintf('../resultats/pretraitement/inv_%s.png', nomsFichiers(i)));
@@ -38,7 +38,7 @@ caracteristiques = cell(nbImages, 1);
 
 for i = 1:nbImages
     fprintf('Extraction %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    caracteristiques{i} = extraction(imagesPretraitees(:,:,:,i));
+    caracteristiques{i} = extraction(imagesPretraitees(:,:,:,i),Espace);
     writetable(struct2table(caracteristiques{i}), sprintf('../resultats/caracteristiques/%s.txt',nomsFichiers(i)));
 end
 
