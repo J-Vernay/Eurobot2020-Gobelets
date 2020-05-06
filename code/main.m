@@ -8,7 +8,7 @@ end
 
 fichiers = dir('../images/*.jpg');
 dimensions = [ 480, 720, 3 ];
-nbImages = length(fichiers);
+nbImages = 1;
 images = zeros([dimensions, nbImages]);
 
 nomsFichiers = strings(nbImages,1);

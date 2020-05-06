@@ -45,7 +45,7 @@ for i = (1:max(max(fLabel)))
     PerimetreGlobal = Perimeter.Perimeter;
 %     MaxFeretProperties = regionprops(fLabel,'MaxFeretProperties');
 %     MinFeretProperties = regionprops(fLabel,'MinFeretProperties');
-%      Caracteristiques = struct('Gobelet',i,'Caracteristiques',struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal));   
+%     Caracteristiques = struct('Gobelet',i,'Caracteristiques',struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal));   
 Caracteristiques = struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal);   
 Gobelets = [Gobelets;Caracteristiques];
 end
@@ -57,16 +57,19 @@ figure(3);
 imshow(fLabel,[]);colorbar; colormap jet,axis on;
 for i = (1:max(max(fLabel)))
 
-    if Gobelets(i).Aire>100
+    if Gobelets(i).Aire>20
         % 384 49 point d'intersection?
         
         hold on,
         line([Gobelets(i).Barycentre(1) 384],[Gobelets(i).Barycentre(2) 35]);
-        % pour gauche 384 49
+        angle=atand((35-Gobelets(i).Barycentre(2))/(Gobelets(i).Barycentre(1)-384));
+        
         %ligne à partir de l'angle
         x=round(Gobelets(i).Barycentre(1)+100*sind(Gobelets(i).Orientation+90));
         y=round(Gobelets(i).Barycentre(2)+100*cosd(Gobelets(i).Orientation+90));
         hold on,
         line([Gobelets(i).Barycentre(1) x],[Gobelets(i).Barycentre(2) y], 'Color','red');
+        a=Gobelets(i).Orientation;
+        resultat=Gobelets(i).Orientation-angle
     end
 end
