@@ -45,9 +45,9 @@ end
 %% Classification
 
 viderDossier('../resultats/sortie');
-
+dimensionimage=[480, 720];
 for i = 1:nbImages
     fprintf('Classification %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    sortieObjets = classification(caracteristiques{i});
+    sortieObjets = classification(caracteristiques{i},dimensionimage);
     writetable(struct2table(sortieObjets),sprintf('../resultats/sortie/%s.txt',nomsFichiers(i)));
 end
