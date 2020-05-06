@@ -1,4 +1,4 @@
-function [Caracteristiques] = extraction(imagePretraitee,espaceUtilise)
+function [Gobelets] = extraction(imagePretraitee,espaceUtilise)
     % exemple de sortie
     % il doit y avoir autant de "caracteristiques(N)" que de gobelets
     % détectés
