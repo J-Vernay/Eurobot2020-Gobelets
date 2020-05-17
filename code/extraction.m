@@ -1,47 +1,68 @@
 function [Gobelets] = extraction(imagePretraitee,espaceUtilise)
-    % exemple de sortie
-    % il doit y avoir autant de "caracteristiques(N)" que de gobelets
-    % détectés
-    figure; subplot(1,2,1); imshow(imagePretraitee,[]);
-    img=rgb2gray(imagePretraitee);
-    moyenne=median(median(img));
-    for i=1:size(img,1)
-        for j=1:size(img,2)
-            if img(i,j)>moyenne
-                img(i,j)=1;%img(i,j);
-            else
-                img(i,j)=0;
-            end
+% exemple de sortie
+% il doit y avoir autant de "caracteristiques(N)" que de gobelets
+% détectés
+figure; subplot(1,2,1); imshow(imagePretraitee,[]);
+img=rgb2gray(imagePretraitee);
+moyenne=median(median(img));
+for i=1:size(img,1)
+    for j=1:size(img,2)
+        if img(i,j)>moyenne
+            img(i,j)=1;%img(i,j);
+        else
+            img(i,j)=0;
         end
     end
-    
-    %% Opérations morphologiques
-    contourext=imdilate(img,strel('disk',1));
-    contourext=contourext-img; 
-    lpe=imfill(contourext,'holes');
-    lpe=tse_imsplitobjects(logical(lpe));
-    lpe=imopen(lpe, strel('disk',4));
-    subplot(1,2,2);imshow(lpe,[]);
-    
-    f = lpe .* imagePretraitee;
-    
-%%   
-    
-    
+end
+
+%% Opérations morphologiques
+contourext=imdilate(img,strel('disk',1));
+contourext=contourext-img;
+lpe=imfill(contourext,'holes');
+lpe=tse_imsplitobjects(logical(lpe));
+lpe=imopen(lpe, strel('disk',4));
+subplot(1,2,2);imshow(lpe,[]);
+
+f = lpe .* imagePretraitee;
+
+%%
+
+
 %% //////////////////////////////////////////////////////////
 %% //////////////////////////////////////////////////////////
 
 %% Classification et recupération des valeurs des pixels
 [fs,centers]=tse_imkmeans(f,3,0.01);
 figure(5); imshow(fs,[]);
-Iclasse1 = double(fs==1) .* (f); % Fond
-Iclasse2 = double(fs==2) .* (f);
-Iclasse3 = double(fs==3) .* (f);
+if (espaceUtilise == "rgb")
+    Iclasse1 = double(fs==1) .* (f); % Fond
+    Iclasse2 = double(fs==2) .* (f);
+    Iclasse3 = double(fs==3) .* (f);
+    moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ]* 255;
+moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
+EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
 
-moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ];
-moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ];
-EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ];
-EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ];
+elseif (espaceUtilise == "hsv")
+    Iclasse1 = rgb2hsv(double(fs==1) .* (f)); % Fond
+    Iclasse2 = rgb2hsv(double(fs==2) .* (f));
+    Iclasse3 = rgb2hsv(double(fs==3) .* (f));
+    moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ]* 255;
+moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
+EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+
+elseif (espaceUtilise == "lab")
+    Iclasse1 = rgb2lab(double(fs==1) .* (f)); % Fond
+    Iclasse2 = rgb2lab(double(fs==2) .* (f));
+    Iclasse3 = rgb2lab(double(fs==3) .* (f));
+    moyParCanalClasse2 = [ mean2((Iclasse2(:,:,1))), mean2((Iclasse2(:,:,2))), mean2((Iclasse2(:,:,3))) ]* 255;
+moyParCanalClasse3 = [ mean2((Iclasse3(:,:,1))), mean2((Iclasse3(:,:,2))), mean2((Iclasse3(:,:,3))) ]* 255;
+EcartTypeParCanalClasse2 = [ std2((Iclasse2(:,:,1))), std2((Iclasse2(:,:,2))), std2((Iclasse2(:,:,3))) ]* 255;
+EcartTypeParCanalClasse3 = [ std2((Iclasse3(:,:,1))), std2((Iclasse3(:,:,2))), std2((Iclasse3(:,:,3))) ]* 255;
+
+end
+
 
 [moyParCanalClasse2 ; moyParCanalClasse3; EcartTypeParCanalClasse2;EcartTypeParCanalClasse3]
 
@@ -70,6 +91,8 @@ if (espaceUtilise == 'rgb')
         end
     end
     figure; imshow(f3,[]);
+    
+    
     %HSV
 elseif (espaceUtilise == 'hsv')
     
@@ -147,30 +170,32 @@ for i = (1:max(max(fLabel)))
     %     MinFeretProperties = regionprops(fLabel,'MinFeretProperties');
     %      Caracteristiques = struct("Gobelet",i,"Caracteristiques",struct("Circularite",ValeurCircularite,"Aire",Aire,"Barycentre",Barycentre,"Orientation",OrientationGobelet,"Perimetre",PerimetreGlobal,"couleur", couleur));
     [coord]=floor(Barycentre);
+    
     if (espaceUtilise == 'rgb')
+        
         % Code pour determiner la couleur du gobelet
-        if f3(coord(2),coord(1),:) == [1,0,0]
+        if (f3(coord(2),coord(1),1) == 1 && f3(coord(2),coord(1),2) == 0 && f3(coord(2),coord(1),3) == 0)
             couleur = "rouge";
-        elseif f3(coord(2),coord(1)) == [0,1,0]
-            couleur = "rouge";
+        elseif (f3(coord(2),coord(1),1) == 0 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 0)
+            couleur = "vert";
         else
             couleur = "fond";
         end
         
     elseif (espaceUtilise == 'hsv')
-        if f3(coord(2),coord(1)) == [0.4,1,1]
+        if (f3(coord(2),coord(1),1) == 0.4 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 1)
             couleur = "rouge";
-        elseif f3(coord(2),coord(1)) == [0,1,1]
-            couleur = "rouge";
+        elseif (f3(coord(2),coord(1),1) == 0 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 1)
+            couleur = "vert";
         else
             couleur = "fond";
         end
         
     elseif (espaceUtilise == 'lab')
-        if f3(coord(2),coord(1)) == [60,-50,0]
+        if (f3(coord(2),coord(1),1) == 60 && f3(coord(2),coord(1),2) == -50 && f3(coord(2),coord(1),3) == 0)
             couleur = "rouge";
-        elseif f3(coord(2),coord(1)) == [60,70,60]
-            couleur = "rouge";
+        elseif (f3(coord(2),coord(1),1) == 60 && f3(coord(2),coord(1),2) == 70 && f3(coord(2),coord(1),3) == 60)
+            couleur = "vert";
         else
             couleur = "fond";
         end
@@ -181,12 +206,12 @@ for i = (1:max(max(fLabel)))
     Gobelets = [Gobelets;Caracteristiques];
     
 end
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 end
 
