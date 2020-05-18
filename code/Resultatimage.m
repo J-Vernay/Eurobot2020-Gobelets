@@ -1,5 +1,5 @@
 function [] = Resultatimage(SortieObjets,image,nomsFichiers)
-    figure()
+    figure('visible', 'off')
     imshow(image)
     hold on
     for k = 1:length(SortieObjets)
@@ -13,8 +13,8 @@ function [] = Resultatimage(SortieObjets,image,nomsFichiers)
     F = getframe ;
     % save the image:
     imwrite(F.cdata, sprintf('../resultats/resultatimage/%s_couleur.jpg',nomsFichiers));
-    
-    figure()
+    close(figure);
+    figure('visible', 'off')
     imshow(image)
     hold on
     for k = 1:length(SortieObjets)

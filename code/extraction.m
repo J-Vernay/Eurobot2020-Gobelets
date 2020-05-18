@@ -1,7 +1,7 @@
 function [Gobelets] = extraction(imagePretraitee,espaceUtilise)
 % exemple de sortie
 % il doit y avoir autant de "caracteristiques(N)" que de gobelets
-% détectés
+% dï¿½tectï¿½s
 % figure; subplot(1,2,1); imshow(imagePretraitee,[]);
 img=rgb2gray(imagePretraitee);
 moyenne=median(median(img));
@@ -49,7 +49,7 @@ elseif (espaceUtilise == "hsv")
     Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
     Iclasse2 = (double(fs==2) .* rgb2hsv(f));
     Iclasse3 = (double(fs==3) .* rgb2hsv(f));
-    %     Translation de H pour eviter la séparation du rouge
+    %     Translation de H pour eviter la sï¿½paration du rouge
     for i = 1:l
         for j = 1:c
             if fs(i,j)==1
@@ -137,7 +137,7 @@ end
 
 
 
-% Déterminer la couleur dans le domaine :
+% Dï¿½terminer la couleur dans le domaine :
 
 %RGB
 if (espaceUtilise == 'rgb')
