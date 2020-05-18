@@ -47,10 +47,33 @@ elseif (espaceUtilise == "hsv")
     Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
     Iclasse2 = (double(fs==2) .* rgb2hsv(f));
     Iclasse3 = (double(fs==3) .* rgb2hsv(f));
-    moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ]* 255;
-moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
-EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
-EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+%     Translation de H pour eviter la séparation du rouge
+    for i = 1:l
+        for j = 1:c
+            if (f(i,j,1)==0 && f(i,j,2)==0 && f(i,j,3)==0 )
+                Iclasse1(i,j,:) = [NaN,NaN,NaN];
+                Iclasse2(i,j,:) = [NaN,NaN,NaN];
+                Iclasse3(i,j,:) = [NaN,NaN,NaN];
+            else
+                if (Iclasse2(i,j,3)>0.2 && Iclasse2(i,j,1) < 0.8 )
+                    Iclasse2(i,j,1) = Iclasse2(i,j,1) + 0.2;
+                elseif (Iclasse2(i,j,3)>0.2 && Iclasse2(i,j,1) > 0.8)
+                    Iclasse2(i,j,1) = 1 - Iclasse2(i,j,1);
+                end
+                if (Iclasse3(i,j,3)>0.2 && Iclasse3(i,j,1) < 0.8 )
+                    Iclasse3(i,j,1) = Iclasse3(i,j,1) + 0.2;
+                elseif (Iclasse3(i,j,3)>0.2 && Iclasse3(i,j,1) > 0.8)
+                    Iclasse3(i,j,1) = 1 - Iclasse3(i,j,1);
+                end
+                
+            end
+        end
+    end
+    
+    moyParCanalClasse2 = [ mean(mean(Iclasse2(:,:,1),"omitnan"),"omitnan"), mean(mean(Iclasse2(:,:,2),"omitnan"),"omitnan"), mean(mean(Iclasse2(:,:,3),"omitnan"),"omitnan") ];
+moyParCanalClasse3 = [  mean(mean(Iclasse3(:,:,1),"omitnan"),"omitnan"), mean(mean(Iclasse3(:,:,2),"omitnan"),"omitnan"), mean(mean(Iclasse3(:,:,3),"omitnan"),"omitnan") ];
+EcartTypeParCanalClasse2 = [  std(std(Iclasse2(:,:,1),"omitnan"),"omitnan"), std(std(Iclasse2(:,:,2),"omitnan"),"omitnan"), std(std(Iclasse2(:,:,3),"omitnan"),"omitnan") ];
+EcartTypeParCanalClasse3 = [ std(std(Iclasse3(:,:,1),"omitnan"),"omitnan"), std(std(Iclasse3(:,:,2),"omitnan"),"omitnan"), std(std(Iclasse3(:,:,3),"omitnan"),"omitnan") ];
 
 elseif (espaceUtilise == "lab")
     Iclasse1 = (double(fs==1) .* rgb2lab(f)); % Fond
@@ -113,11 +136,24 @@ elseif (espaceUtilise == 'hsv')
     
     f2 = rgb2hsv(f);
     f3 = f2;
+    
     for i = 1:l
         for j = 1:c
-            if (f2(i,j,1)>0.4 && f2(i,j,1)<0.6) && (f2(i,j,2)>0.5 && f2(i,j,3)>0.3)
+            
+            if (f2(i,j,3)>0.2 && f2(i,j,1) < 0.8 )
+                f2(i,j,1) = f2(i,j,1) + 0.2;                
+            elseif (f2(i,j,3)>0.2 && f2(i,j,1) > 0.8)
+                f2(i,j,1) = 1 - f2(i,j,1);
+            end
+            
+        end
+    end
+    
+    for i = 1:l
+        for j = 1:c
+            if (f2(i,j,1)>0.4 && f2(i,j,1)<0.8) && (f2(i,j,2)>0.5 && f2(i,j,3)>0.3)
                 f3(i,j,:)=[0.4,1,1];
-            elseif (f2(i,j,1)<0.1 || f2(i,j,1)>0.9) && f2(i,j,2)>0.5 && f2(i,j,3)>0.3
+            elseif (f2(i,j,1)<0.4 || f2(i,j,1)>0.9) && f2(i,j,2)>0.5 && f2(i,j,3)>0.3
                 f3(i,j,:)=[0,1,1];
             else
                 f3(i,j,:) = [NaN,NaN,NaN];
