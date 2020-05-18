@@ -1,28 +1,32 @@
 function [classes] = classification(caracteristiques,dimensionimage)
-
+    j=0;
     for k = 1:length(caracteristiques)
         
-        classes(k).x = caracteristiques(k).x;
-        classes(k).y = caracteristiques(k).y;
+        if caracteristiques(k).Aire>20
+            j=j+1;
+            classes(j).couleur = caracteristiques(k).couleur;
+            classes(j).Barycentre=caracteristiques(k).Barycentre;
         
-        coefperspective=dimensionimage(2)-caracteristiques(k).y/dimensionimage(2);
-        if abs(caracteristiques(k).teinteMoyenne - 0.3333) < 0.1
-            classes(k).couleur = 'vert';
-        else
-            classes(k).couleur = 'rouge';
-        end
+        % 384 49 point d'intersection?
         
-        if abs(caracteristiques(k).x - 3) < 15
-            classes(k).position = '/\';
-        else if abs(caracteristiques(k).x - 3) > 50
-                classes(k).position = '\/';
+            hold on,
+            line([caracteristiques(k).Barycentre(1) 384],[caracteristiques(k).Barycentre(2) 35]);
+            angle=atand((35-caracteristiques(k).Barycentre(2))/(caracteristiques(k).Barycentre(1)-384));
+
+            %ligne à partir de l'angle
+            x=round(caracteristiques(k).Barycentre(1)+100*sind(caracteristiques(k).Orientation+90));
+            y=round(caracteristiques(k).Barycentre(2)+100*cosd(caracteristiques(k).Orientation+90));
+            hold on,
+            line([caracteristiques(k).Barycentre(1) x],[caracteristiques(k).Barycentre(2) y], 'Color','red');
+            %a=caracteristiques(k).Orientation;
+            resultat(k)=caracteristiques(k).Orientation-angle;
+            if resultat(k) < 5 && resultat(k) > -5
+                classes(j).position = "debout";
             else
-                classes(k).position = '--';
-            end
+                classes(j).position = "couche";
+            end      
         end
-            
-            
-         
-    end
+    
+        
 end
 

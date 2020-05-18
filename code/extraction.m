@@ -197,12 +197,13 @@ fbin3 = imopen(FBW,s);
 fLabel=bwlabel(fbin3,4);
 figure(3);
 imshow(fLabel,[]);colorbar; colormap jet;
-Gobelets = struct("Circularite",0,"Aire",0,"Barycentre",0,"Orientation",0,"Perimetre",0,"couleur", "fond");
+Gobelets = struct('Circularite',0,'Aire',0,'Barycentre',0,'Orientation',0,'Perimetre',0,'couleur', "fond");
 
 for i = (1:max(max(fLabel)))
     
-    circularite = regionprops(fLabel==i,'Circularity');
-    ValeurCircularite = circularite.Circularity;
+    %circularite = regionprops(fLabel==i,'Circularity');
+    %ValeurCircularite = circularite.Circularity;
+    ValeurCircularite=0;
     
     Area = regionprops(fLabel==i,'Area');
     Aire = Area.Area;
@@ -253,7 +254,7 @@ for i = (1:max(max(fLabel)))
     end
     
     
-    Caracteristiques = struct("Circularite",ValeurCircularite,"Aire",Aire,"Barycentre",Barycentre,"Orientation",OrientationGobelet,"Perimetre",PerimetreGlobal,"couleur", couleur);
+    Caracteristiques = struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal,'couleur', couleur);
     Gobelets = [Gobelets;Caracteristiques];
     
 end

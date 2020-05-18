@@ -58,8 +58,7 @@ imshow(fLabel,[]);colorbar; colormap jet,axis on;
 for i = (1:max(max(fLabel)))
 
     if Gobelets(i).Aire>20
-        % 384 49 point d'intersection?
-        
+               
         hold on,
         line([Gobelets(i).Barycentre(1) 384],[Gobelets(i).Barycentre(2) 35]);
         angle=atand((35-Gobelets(i).Barycentre(2))/(Gobelets(i).Barycentre(1)-384));
