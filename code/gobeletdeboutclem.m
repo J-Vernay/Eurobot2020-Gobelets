@@ -1,7 +1,7 @@
 clear all;
 
-f=imread('../images/capture201.jpg');
-%f=imread('../images/capture32Detouree.bmp');
+%f=imread('../images/capture201.jpg');
+f=imread('../images/capture32Detouree.bmp');
 figure(1)
 imshow(f);
 
@@ -70,6 +70,11 @@ for i = (1:max(max(fLabel)))
         hold on,
         line([Gobelets(i).Barycentre(1) x],[Gobelets(i).Barycentre(2) y], 'Color','red');
         a=Gobelets(i).Orientation;
-        resultat=Gobelets(i).Orientation-angle
+        resultat(i)=Gobelets(i).Orientation-angle;
+        if resultat(i) < 3 && resultat(i) > -3
+            classes(i).position = '\/';
+        else
+            classes(i).position = '--';
+        end
     end
 end
