@@ -8,7 +8,7 @@ end
 Espace = 'lab';
 fichiers = dir('../images/*.jpg');
 dimensions = [ 480, 720, 3 ];
-nbImages = 3;
+nbImages = 5;
 images = zeros([dimensions, nbImages]);
 
 nomsFichiers = strings(nbImages,1);
