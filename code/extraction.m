@@ -1,20 +1,22 @@
 function [Gobelets] = extraction(imagePretraitee,espaceUtilise)
 % exemple de sortie
 % il doit y avoir autant de "caracteristiques(N)" que de gobelets
-% dï¿½tectï¿½s
+% détectés
 % figure; subplot(1,2,1); imshow(imagePretraitee,[]);
 img=rgb2gray(imagePretraitee);
 moyenne=median(median(img));
-for i=1:size(img,1)
-    for j=1:size(img,2)
-        if img(i,j)>moyenne
-            img(i,j)=1;%img(i,j);
-        else
-            img(i,j)=0;
-        end
-    end
-end
-
+img=img>moyenne; %Seuillage
+% 
+% for i=1:size(img,1)
+%     for j=1:size(img,2)
+%         if img(i,j)>moyenne
+%             img(i,j)=1;%img(i,j);
+%         else
+%             img(i,j)=0;
+%         end
+%     end
+% end
+%  figure; subplot(1,2,1); imshow(img,[]);
 %% Opï¿½rations morphologiques
 contourext=imdilate(img,strel('disk',1));
 contourext=contourext-img;
@@ -39,15 +41,15 @@ if (espaceUtilise == "rgb")
     Iclasse2 = double(fs==2) .* (f);
     Iclasse3 = double(fs==3) .* (f);
     moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ]* 255;
-moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
-EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
-EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
-
+    moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+    EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
+    EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
+    
 elseif (espaceUtilise == "hsv")
     Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
     Iclasse2 = (double(fs==2) .* rgb2hsv(f));
     Iclasse3 = (double(fs==3) .* rgb2hsv(f));
-%     Translation de H pour eviter la sï¿½paration du rouge
+    %     Translation de H pour eviter la séparation du rouge
     for i = 1:l
         for j = 1:c
             if fs(i,j)==1
@@ -87,7 +89,7 @@ elseif (espaceUtilise == "hsv")
     
     EcartTypeParCanalClasse2 = std(pixelsClasse2(~isnan(pixelsClasse2(:, 1)),:));
     EcartTypeParCanalClasse3 = std(pixelsClasse3(~isnan(pixelsClasse3(:, 1)),:));
-
+    
 elseif (espaceUtilise == "lab")
     Iclasse1 = (double(fs==1) .* rgb2lab(f)); % Fond
     Iclasse2 = (logical(fs==2) .* rgb2lab(f));
@@ -121,92 +123,97 @@ elseif (espaceUtilise == "lab")
     
     EcartTypeParCanalClasse2 = std(pixelsClasse2(~isnan(pixelsClasse2(:, 1)),:));
     EcartTypeParCanalClasse3 = std(pixelsClasse3(~isnan(pixelsClasse3(:, 1)),:));
-
-
-
-% mean(mean(Iclasse2(:,:,1),"omitnan"),"omitnan")
+    
+    
+    
+    % mean(mean(Iclasse2(:,:,1),"omitnan"),"omitnan")
 end
 
 
-[moyParCanalClasse2 ; moyParCanalClasse3; EcartTypeParCanalClasse2;EcartTypeParCanalClasse3]
+[moyParCanalClasse2 ; moyParCanalClasse3; EcartTypeParCanalClasse2;EcartTypeParCanalClasse3];
 
 %% //////////////////////////////////////////////////////////
 %% //////////////////////////////////////////////////////////
 
 
 
-% Dï¿½terminer la couleur dans le domaine :
+% Déterminer la couleur dans le domaine :
 
 %RGB
 if (espaceUtilise == 'rgb')
     f2(:,:,1) =  double(f(:,:,1))./double(f(:,:,1)+f(:,:,2)+f(:,:,3));
     f2(:,:,2) =  double(f(:,:,2))./double(f(:,:,1)+f(:,:,2)+f(:,:,3));
     f2(:,:,3) =  double(f(:,:,3))./double(f(:,:,1)+f(:,:,2)+f(:,:,3));
-    f3=f2;
+%     f3=f2(:,:,1);
+    f3 = zeros(size(f2,1),size(f2,2));
+    f3( f2(:,:,1)>0.5 & f2(:,:,2)<0.2 & f2(:,:,3)<0.2) = 1; 
+    f3( f2(:,:,1)<0.3 & f2(:,:,2)>0.3 & abs(f2(:,:,2)-f2(:,:,3))<0.25 ) = 2;
+
     for i = 1:l
         for j = 1:c
             if (f2(i,j,1)>0.5 && f2(i,j,2)<0.2 && f2(i,j,3)<0.2)
-                f3(i,j,:) = [1,0,0];
+                f3(i,j,:) = 1;
             elseif (f2(i,j,1)<0.3 && f2(i,j,2)>0.3 && abs(f2(i,j,2)-f2(i,j,3))<0.25 )
-                f3(i,j,:) = [0,1,0];
+                f3(i,j,:) = 2;
             else
-                f3(i,j,:) = [NaN,NaN,NaN];
+                f3(i,j,:) = NaN;
             end
         end
     end
+    
+    
+    
 %     figure; imshow(f3,[]);
     
     
     %HSV
-elseif (espaceUtilise == 'hsv')
+elseif (espaceUtilise == "hsv")
     
     f2 = rgb2hsv(f);
-    f3 = f2;
+    f3 = f2(:,:,1);
+    
     
     for i = 1:l
         for j = 1:c
-            
-            if (f2(i,j,3)>0.2 && f2(i,j,1) < 0.8 )
+            if ( f2(i,j,1) < 0.8 )
                 f2(i,j,1) = f2(i,j,1) + 0.2;                
-            elseif (f2(i,j,3)>0.2 && f2(i,j,1) > 0.8)
+            elseif (f2(i,j,1) > 0.8)
                 f2(i,j,1) = 1 - f2(i,j,1);
             end
             
-        end
-    end
-    
-    for i = 1:l
-        for j = 1:c
-            if (f2(i,j,1)>0.4 && f2(i,j,1)<0.8) && (f2(i,j,2)>0.5 && f2(i,j,3)>0.3)
-                f3(i,j,:)=[0.4,1,1];
-            elseif (f2(i,j,1)<0.4 || f2(i,j,1)>0.9) && f2(i,j,2)>0.5 && f2(i,j,3)>0.3
-                f3(i,j,:)=[0,1,1];
+            if (f2(i,j,1)>0.5) && (f2(i,j,2)>0.5 && f2(i,j,3)>0.3)
+                f3(i,j)=2;
+            elseif (f2(i,j,1)<0.4) && f2(i,j,2)>0.5 && f2(i,j,3)>0.3
+                f3(i,j)=1;
             else
-                f3(i,j,:) = [NaN,NaN,NaN];
+                f3(i,j) = NaN;
             end
         end
     end
-    f4 = hsv2rgb(f3);
-%     figure; imshow(f4,[]);
+%     f4 = hsv2rgb(f3);
+%     figure(101); imagesc(f4);
     
-    %Lab
+    %% Lab
 elseif (espaceUtilise == 'lab')
     %Inconvenient : moins restrictif que les prï¿½cï¿½dents
     f2 = rgb2lab(f);
-    f3 = f2;
-    for i = 1:l
-        for j = 1:c
-            if (  (f2(i,j,2)<86 && f2(i,j,2)>14) && (f2(i,j,3)<77 && f2(i,j,3)>-13) )
-                f3(i,j,:)=[60,70,60];
-            elseif ((f2(i,j,2)<0 && f2(i,j,2)>-60) && (f2(i,j,3)<30 && f2(i,j,3)>-18))
-                f3(i,j,:)=[60,-50,0];
-            else
-                f3(i,j,:) = [NaN,NaN,NaN];
-            end
-        end
-    end
-    f4 = lab2rgb(f3);
-%     figure; imshow(f4,[]);
+%     f3 = f2;
+    f3 = zeros(size(f2,1),size(f2,2));
+    f3(-60 < f2(:,:,2) & f2(:,:,2) < 0 & -18 < f2(:,:,3) & f2(:,:,3) < 30) = 1; 
+    f3(14 <f2(:,:,2) & f2(:,:,2) < 86 & -13 < f2(:,:,3) & f2(:,:,3) < 77) = 2;
+%     for i = 1:l
+%         for j = 1:c
+%             if (  (f2(i,j,2)<86 && f2(i,j,2)>14) && (f2(i,j,3)<77 && f2(i,j,3)>-13) )
+%                 f3(i,j,:)=2;
+%             elseif ((f2(i,j,2)<0 && f2(i,j,2)>-60) && (f2(i,j,3)<30 && f2(i,j,3)>-18))
+%                 f3(i,j,:)=1;
+%             else
+%                 f3(i,j,:) = NaN;
+%             end
+%         end
+%     end
+%     f4 = lab2rgb(f3);
+%     figure; imagesc(f3);
 end
 
 
@@ -221,8 +228,8 @@ fbin3 = imopen(FBW,s);
 
 
 fLabel=bwlabel(fbin3,4);
-figure(3);
-imshow(fLabel,[]);colorbar; colormap jet;
+% figure(3);
+% imshow(fLabel,[]);colorbar; colormap jet;
 Gobelets = struct('Circularite',0,'Aire',0,'Barycentre',0,'Orientation',0,'Perimetre',0,'couleur', "fond");
 
 for i = (1:max(max(fLabel)))
@@ -249,35 +256,15 @@ for i = (1:max(max(fLabel)))
     %      Caracteristiques = struct("Gobelet",i,"Caracteristiques",struct("Circularite",ValeurCircularite,"Aire",Aire,"Barycentre",Barycentre,"Orientation",OrientationGobelet,"Perimetre",PerimetreGlobal,"couleur", couleur));
     [coord]=floor(Barycentre);
     
-    if (espaceUtilise == 'rgb')
-        
-        % Code pour determiner la couleur du gobelet
-        if (f3(coord(2),coord(1),1) == 1 && f3(coord(2),coord(1),2) == 0 && f3(coord(2),coord(1),3) == 0)
+   
+        if (f3(coord(2),coord(1)) == 1)
             couleur = "rouge";
-        elseif (f3(coord(2),coord(1),1) == 0 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 0)
+        elseif (f3(coord(2),coord(1)) == 2)
             couleur = "vert";
         else
             couleur = "fond";
         end
-        
-    elseif (espaceUtilise == 'hsv')
-        if (f3(coord(2),coord(1),1) == 0.4 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 1)
-            couleur = "rouge";
-        elseif (f3(coord(2),coord(1),1) == 0 && f3(coord(2),coord(1),2) == 1 && f3(coord(2),coord(1),3) == 1)
-            couleur = "vert";
-        else
-            couleur = "fond";
-        end
-        
-    elseif (espaceUtilise == 'lab')
-        if (f3(coord(2),coord(1),1) == 60 && f3(coord(2),coord(1),2) == -50 && f3(coord(2),coord(1),3) == 0)
-            couleur = "rouge";
-        elseif (f3(coord(2),coord(1),1) == 60 && f3(coord(2),coord(1),2) == 70 && f3(coord(2),coord(1),3) == 60)
-            couleur = "vert";
-        else
-            couleur = "fond";
-        end
-    end
+  
     
     
     Caracteristiques = struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal,'couleur', couleur);
