@@ -8,7 +8,9 @@ end
 Espace = 'lab';
 fichiers = dir('../images/*.jpg');
 dimensions = [ 480, 720, 3 ];
-nbImages = 5;
+
+
+nbImages = length(fichiers);
 images = zeros([dimensions, nbImages]);
 
 nomsFichiers = strings(nbImages,1);
@@ -49,8 +51,8 @@ viderDossier('../resultats/sortie');
 dimensionimage=[480, 720];
 for i = 1:nbImages
     fprintf('Classification %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    sortieObjets = classification(caracteristiques{i},dimensionimage);
-    writetable(struct2table(sortieObjets),sprintf('../resultats/sortie/%s.txt',nomsFichiers(i)));
+    sortieObjets{i} = classification(caracteristiques{i},dimensionimage);
+    writetable(struct2table(sortieObjets{i}),sprintf('../resultats/sortie/%s.txt',nomsFichiers(i)));
 end
 
 %% résultat sur image
@@ -58,6 +60,6 @@ end
 viderDossier('../resultats/resultatimage');
 for i = 1:nbImages
     fprintf('création images résultats %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    Resultatimage(sortieObjets,images(:,:,:,i),nomsFichiers(i));
+    Resultatimage(sortieObjets{i},images(:,:,:,i),nomsFichiers(i));
     
 end
