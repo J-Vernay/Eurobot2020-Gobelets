@@ -26,7 +26,7 @@ subplot(1,2,2);imshow(lpe,[]);
 f = lpe .* imagePretraitee;
 
 %%
-
+[l,c,~]=size(f);
 
 %% //////////////////////////////////////////////////////////
 %% //////////////////////////////////////////////////////////
@@ -44,23 +44,38 @@ EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Icla
 EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
 
 elseif (espaceUtilise == "hsv")
-    Iclasse1 = rgb2hsv(double(fs==1) .* (f)); % Fond
-    Iclasse2 = rgb2hsv(double(fs==2) .* (f));
-    Iclasse3 = rgb2hsv(double(fs==3) .* (f));
+    Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
+    Iclasse2 = (double(fs==2) .* rgb2hsv(f));
+    Iclasse3 = (double(fs==3) .* rgb2hsv(f));
     moyParCanalClasse2 = [ mean2(nonzeros(Iclasse2(:,:,1))), mean2(nonzeros(Iclasse2(:,:,2))), mean2(nonzeros(Iclasse2(:,:,3))) ]* 255;
 moyParCanalClasse3 = [ mean2(nonzeros(Iclasse3(:,:,1))), mean2(nonzeros(Iclasse3(:,:,2))), mean2(nonzeros(Iclasse3(:,:,3))) ]* 255;
 EcartTypeParCanalClasse2 = [ std2(nonzeros(Iclasse2(:,:,1))), std2(nonzeros(Iclasse2(:,:,2))), std2(nonzeros(Iclasse2(:,:,3))) ]* 255;
 EcartTypeParCanalClasse3 = [ std2(nonzeros(Iclasse3(:,:,1))), std2(nonzeros(Iclasse3(:,:,2))), std2(nonzeros(Iclasse3(:,:,3))) ]* 255;
 
 elseif (espaceUtilise == "lab")
-    Iclasse1 = rgb2lab(double(fs==1) .* (f)); % Fond
-    Iclasse2 = rgb2lab(double(fs==2) .* (f));
-    Iclasse3 = rgb2lab(double(fs==3) .* (f));
-    moyParCanalClasse2 = [ mean2((Iclasse2(:,:,1))), mean2((Iclasse2(:,:,2))), mean2((Iclasse2(:,:,3))) ]* 255;
-moyParCanalClasse3 = [ mean2((Iclasse3(:,:,1))), mean2((Iclasse3(:,:,2))), mean2((Iclasse3(:,:,3))) ]* 255;
-EcartTypeParCanalClasse2 = [ std2((Iclasse2(:,:,1))), std2((Iclasse2(:,:,2))), std2((Iclasse2(:,:,3))) ]* 255;
-EcartTypeParCanalClasse3 = [ std2((Iclasse3(:,:,1))), std2((Iclasse3(:,:,2))), std2((Iclasse3(:,:,3))) ]* 255;
+    Iclasse1 = (double(fs==1) .* rgb2lab(f)); % Fond
+    Iclasse2 = (double(fs==2) .* rgb2lab(f));
+    Iclasse3 = (double(fs==3) .* rgb2lab(f));
+    
+    for i = 1:l
+        for j = 1:c
+            if (f(i,j,1)==0 && f(i,j,2)==0 && f(i,j,3)==0 )
+                Iclasse1(i,j,:) = [NaN,NaN,NaN];
+                Iclasse2(i,j,:) = [NaN,NaN,NaN];
+                Iclasse3(i,j,:) = [NaN,NaN,NaN];
+            end
+        end
+    end
+    
+    
+    moyParCanalClasse2 = [ mean(mean(Iclasse2(:,:,1),"omitnan"),"omitnan"), mean(mean(Iclasse2(:,:,2),"omitnan"),"omitnan"), mean(mean(Iclasse2(:,:,3),"omitnan"),"omitnan") ];
+moyParCanalClasse3 = [  mean(mean(Iclasse3(:,:,1),"omitnan"),"omitnan"), mean(mean(Iclasse3(:,:,2),"omitnan"),"omitnan"), mean(mean(Iclasse3(:,:,3),"omitnan"),"omitnan") ];
+EcartTypeParCanalClasse2 = [  std(std(Iclasse2(:,:,1),"omitnan"),"omitnan"), std(std(Iclasse2(:,:,2),"omitnan"),"omitnan"), std(std(Iclasse2(:,:,3),"omitnan"),"omitnan") ];
+EcartTypeParCanalClasse3 = [ std(std(Iclasse3(:,:,1),"omitnan"),"omitnan"), std(std(Iclasse3(:,:,2),"omitnan"),"omitnan"), std(std(Iclasse3(:,:,3),"omitnan"),"omitnan") ];
 
+
+
+% mean(mean(Iclasse2(:,:,1),"omitnan"),"omitnan")
 end
 
 
@@ -70,7 +85,7 @@ end
 %% //////////////////////////////////////////////////////////
 
 
-[l,c,~]=size(f);
+
 % Déterminer la couleur dans le domaine :
 
 %RGB
@@ -119,9 +134,9 @@ elseif (espaceUtilise == 'lab')
     f3 = f2;
     for i = 1:l
         for j = 1:c
-            if (f2(i,j,2)<0 && f2(i,j,1)>10)
+            if (f2(i,j,2)<-20 && f2(i,j,1)>10)
                 f3(i,j,:)=[60,-50,0];
-            elseif (f2(i,j,2)>0.5 && f2(i,j,1)>10)
+            elseif (f2(i,j,2)>30 && f2(i,j,1)>10)
                 f3(i,j,:)=[60,70,60];
             else
                 f3(i,j,:) = [NaN,NaN,NaN];
@@ -129,7 +144,7 @@ elseif (espaceUtilise == 'lab')
         end
     end
     f4 = lab2rgb(f3);
-    figure; imshow(f4,[]);
+    figure; imshow(f,[]);
 end
 
 
