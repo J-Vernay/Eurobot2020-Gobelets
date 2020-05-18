@@ -1,7 +1,7 @@
 clear all;
 
-f=imread('../images/capture201.jpg');
-%f=imread('../images/capture32Detouree.bmp');
+%f=imread('../images/capture201.jpg');
+f=imread('../images/capture32Detouree.bmp');
 figure(1)
 imshow(f);
 
@@ -58,8 +58,7 @@ imshow(fLabel,[]);colorbar; colormap jet,axis on;
 for i = (1:max(max(fLabel)))
 
     if Gobelets(i).Aire>20
-        % 384 49 point d'intersection?
-        
+               
         hold on,
         line([Gobelets(i).Barycentre(1) 384],[Gobelets(i).Barycentre(2) 35]);
         angle=atand((35-Gobelets(i).Barycentre(2))/(Gobelets(i).Barycentre(1)-384));
@@ -70,6 +69,11 @@ for i = (1:max(max(fLabel)))
         hold on,
         line([Gobelets(i).Barycentre(1) x],[Gobelets(i).Barycentre(2) y], 'Color','red');
         a=Gobelets(i).Orientation;
-        resultat=Gobelets(i).Orientation-angle
+        resultat(i)=Gobelets(i).Orientation-angle;
+        if resultat(i) < 3 && resultat(i) > -3
+            classes(i).position = '\/';
+        else
+            classes(i).position = '--';
+        end
     end
 end

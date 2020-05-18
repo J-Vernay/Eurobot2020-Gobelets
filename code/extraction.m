@@ -1,7 +1,7 @@
 function [Gobelets] = extraction(imagePretraitee,espaceUtilise)
 % exemple de sortie
 % il doit y avoir autant de "caracteristiques(N)" que de gobelets
-% détectés
+% dï¿½tectï¿½s
 % figure; subplot(1,2,1); imshow(imagePretraitee,[]);
 img=rgb2gray(imagePretraitee);
 moyenne=median(median(img));
@@ -15,7 +15,7 @@ for i=1:size(img,1)
     end
 end
 
-%% Opérations morphologiques
+%% Opï¿½rations morphologiques
 contourext=imdilate(img,strel('disk',1));
 contourext=contourext-img;
 lpe=imfill(contourext,'holes');
@@ -31,7 +31,7 @@ f = lpe .* imagePretraitee;
 %% //////////////////////////////////////////////////////////
 %% //////////////////////////////////////////////////////////
 
-%% Classification et recupération des valeurs des pixels
+%% Classification et recupï¿½ration des valeurs des pixels
 [fs,centers]=tse_imkmeans(f,3,0.01);
 % figure(5); imshow(fs,[]);
 if (espaceUtilise == "rgb")
@@ -47,7 +47,7 @@ elseif (espaceUtilise == "hsv")
     Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
     Iclasse2 = (double(fs==2) .* rgb2hsv(f));
     Iclasse3 = (double(fs==3) .* rgb2hsv(f));
-%     Translation de H pour eviter la séparation du rouge
+%     Translation de H pour eviter la sï¿½paration du rouge
     for i = 1:l
         for j = 1:c
             if fs(i,j)==1
@@ -135,7 +135,7 @@ end
 
 
 
-% Déterminer la couleur dans le domaine :
+% Dï¿½terminer la couleur dans le domaine :
 
 %RGB
 if (espaceUtilise == 'rgb')
@@ -191,7 +191,7 @@ elseif (espaceUtilise == 'hsv')
     
     %Lab
 elseif (espaceUtilise == 'lab')
-    %Inconvenient : moins restrictif que les précédents
+    %Inconvenient : moins restrictif que les prï¿½cï¿½dents
     f2 = rgb2lab(f);
     f3 = f2;
     for i = 1:l
@@ -221,14 +221,15 @@ fbin3 = imopen(FBW,s);
 
 
 fLabel=bwlabel(fbin3,4);
-% figure(3);
-% imshow(fLabel,[]);colorbar; colormap jet;
-Gobelets = struct("Circularite",0,"Aire",0,"Barycentre",0,"Orientation",0,"Perimetre",0,"couleur", "fond");
+figure(3);
+imshow(fLabel,[]);colorbar; colormap jet;
+Gobelets = struct('Circularite',0,'Aire',0,'Barycentre',0,'Orientation',0,'Perimetre',0,'couleur', "fond");
 
 for i = (1:max(max(fLabel)))
     
-    circularite = regionprops(fLabel==i,'Circularity');
-    ValeurCircularite = circularite.Circularity;
+    %circularite = regionprops(fLabel==i,'Circularity');
+    %ValeurCircularite = circularite.Circularity;
+    ValeurCircularite=0;
     
     Area = regionprops(fLabel==i,'Area');
     Aire = Area.Area;
@@ -279,7 +280,7 @@ for i = (1:max(max(fLabel)))
     end
     
     
-    Caracteristiques = struct("Circularite",ValeurCircularite,"Aire",Aire,"Barycentre",Barycentre,"Orientation",OrientationGobelet,"Perimetre",PerimetreGlobal,"couleur", couleur);
+    Caracteristiques = struct('Circularite',ValeurCircularite,'Aire',Aire,'Barycentre',Barycentre,'Orientation',OrientationGobelet,'Perimetre',PerimetreGlobal,'couleur', couleur);
     Gobelets = [Gobelets;Caracteristiques];
     
 end
