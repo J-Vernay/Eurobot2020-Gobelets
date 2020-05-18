@@ -15,7 +15,7 @@ for i=1:size(img,1)
     end
 end
 
-%% Opï¿½rations morphologiques
+%% Opérations morphologiques
 contourext=imdilate(img,strel('disk',1));
 contourext=contourext-img;
 lpe=imfill(contourext,'holes');
@@ -221,8 +221,8 @@ fbin3 = imopen(FBW,s);
 
 
 fLabel=bwlabel(fbin3,4);
-figure(3);
-imshow(fLabel,[]);colorbar; colormap jet;
+%figure(3);
+%imshow(fLabel,[]);colorbar; colormap jet;
 Gobelets = struct('Circularite',0,'Aire',0,'Barycentre',0,'Orientation',0,'Perimetre',0,'couleur', "fond");
 
 for i = (1:max(max(fLabel)))
