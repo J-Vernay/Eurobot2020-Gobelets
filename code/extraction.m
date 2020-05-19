@@ -49,7 +49,7 @@ elseif (espaceUtilise == "hsv")
     Iclasse1 = (double(fs==1) .* rgb2hsv(f)); % Fond
     Iclasse2 = (double(fs==2) .* rgb2hsv(f));
     Iclasse3 = (double(fs==3) .* rgb2hsv(f));
-    %     Translation de H pour eviter la sï¿½paration du rouge
+    %     Translation de H pour eviter la séparation du rouge
     for i = 1:l
         for j = 1:c
             if fs(i,j)==1
@@ -98,7 +98,6 @@ elseif (espaceUtilise == "lab")
     for i = 1:l
         for j = 1:c
             if fs(i,j)==1
-                Iclasse1(i,j,:) = [NaN,NaN,NaN];
                 Iclasse2(i,j,:) = [NaN,NaN,NaN];
                 Iclasse3(i,j,:) = [NaN,NaN,NaN];
             elseif fs(i,j)==2
@@ -107,7 +106,6 @@ elseif (espaceUtilise == "lab")
                 Iclasse2(i,j,:) = [NaN,NaN,NaN];
                 
             elseif(f(i,j,1)==0 && f(i,j,2)==0 && f(i,j,3)==0 )
-                Iclasse1(i,j,:) = [NaN,NaN,NaN];
                 Iclasse2(i,j,:) = [NaN,NaN,NaN];
                 Iclasse3(i,j,:) = [NaN,NaN,NaN];
             end
@@ -146,20 +144,20 @@ if (espaceUtilise == 'rgb')
     f2(:,:,3) =  double(f(:,:,3))./double(f(:,:,1)+f(:,:,2)+f(:,:,3));
 %     f3=f2(:,:,1);
     f3 = zeros(size(f2,1),size(f2,2));
-    f3( f2(:,:,1)>0.5 & f2(:,:,2)<0.2 & f2(:,:,3)<0.2) = 1; 
-    f3( f2(:,:,1)<0.3 & f2(:,:,2)>0.3 & abs(f2(:,:,2)-f2(:,:,3))<0.25 ) = 2;
-
-    for i = 1:l
-        for j = 1:c
-            if (f2(i,j,1)>0.5 && f2(i,j,2)<0.2 && f2(i,j,3)<0.2)
-                f3(i,j,:) = 1;
-            elseif (f2(i,j,1)<0.3 && f2(i,j,2)>0.3 && abs(f2(i,j,2)-f2(i,j,3))<0.25 )
-                f3(i,j,:) = 2;
-            else
-                f3(i,j,:) = NaN;
-            end
-        end
-    end
+    f3( f2(:,:,1)>0.35 & f2(:,:,2)<0.35 & f2(:,:,3)<0.35) = 1; 
+    f3( f2(:,:,1)<0.3 & f2(:,:,2)>0.3 & f2(:,:,3)>0.2 ) = 2;
+% 
+%     for i = 1:l
+%         for j = 1:c
+%             if (f2(i,j,1)>0.5 && f2(i,j,2)<0.2 && f2(i,j,3)<0.2)
+%                 f3(i,j,:) = 1;
+%             elseif (f2(i,j,1)<0.3 && f2(i,j,2)>0.3 && abs(f2(i,j,2)-f2(i,j,3))<0.25 )
+%                 f3(i,j,:) = 2;
+%             else
+%                 f3(i,j,:) = NaN;
+%             end
+%         end
+%     end
     
     
     
@@ -181,15 +179,21 @@ elseif (espaceUtilise == "hsv")
                 f2(i,j,1) = 1 - f2(i,j,1);
             end
             
-            if (f2(i,j,1)>0.5) && (f2(i,j,2)>0.5 && f2(i,j,3)>0.3)
-                f3(i,j)=2;
-            elseif (f2(i,j,1)<0.4) && f2(i,j,2)>0.5 && f2(i,j,3)>0.3
-                f3(i,j)=1;
-            else
-                f3(i,j) = NaN;
-            end
+%             if ((0.7 <f2(:,:,2)) & (f2(:,:,2) < 0.9)  & (f2(i,j,3)>0.3) )
+%                 f3(i,j)=2;
+%             elseif ((0.5 <f2(:,:,2)) & (f2(:,:,2) < 0.7)  & (f2(i,j,3)>0.3) )
+%                 f3(i,j)=1;
+%             else
+%                 f3(i,j) = NaN;
+%             end
         end
     end
+    
+    
+    f3 = zeros(size(f2,1),size(f2,2));
+    f3( (0.5 <f2(:,:,2)) & (f2(:,:,2) < 0.7)  & (f2(i,j,3)>0.3)) = 1; 
+    f3( (0.7 <f2(:,:,2)) & (f2(:,:,2) < 0.9)  & (f2(i,j,3)>0.3)) = 2;
+    
 %     f4 = hsv2rgb(f3);
 %     figure(101); imagesc(f4);
     
@@ -199,8 +203,9 @@ elseif (espaceUtilise == 'lab')
     f2 = rgb2lab(f);
 %     f3 = f2;
     f3 = zeros(size(f2,1),size(f2,2));
-    f3(-60 < f2(:,:,2) & f2(:,:,2) < 0 & -18 < f2(:,:,3) & f2(:,:,3) < 30) = 1; 
-    f3(14 <f2(:,:,2) & f2(:,:,2) < 86 & -13 < f2(:,:,3) & f2(:,:,3) < 77) = 2;
+    f3(14 <f2(:,:,2) & f2(:,:,2) < 86 & -13 < f2(:,:,3) & f2(:,:,3) < 77) = 1;
+    f3(-60 < f2(:,:,2) & f2(:,:,2) < 0 & -18 < f2(:,:,3) & f2(:,:,3) < 30) = 2; 
+    
 %     for i = 1:l
 %         for j = 1:c
 %             if (  (f2(i,j,2)<86 && f2(i,j,2)>14) && (f2(i,j,3)<77 && f2(i,j,3)>-13) )
