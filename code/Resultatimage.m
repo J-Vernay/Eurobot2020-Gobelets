@@ -1,4 +1,11 @@
 function [] = Resultatimage(SortieObjets,image,nomsFichiers)
+    % création d'image pour vérifier visuellement les réaultats
+    % Entrée: vecteurs d'informations de potentiels gobelets
+    % Sortie: vecteurs des gobelets expérimentaux et leurs
+    %caractéristiques
+    
+
+    %création des images avec des * pour rouge et des + pour vert
     figure('visible', 'off')
     imshow(image)
     hold on
@@ -14,6 +21,8 @@ function [] = Resultatimage(SortieObjets,image,nomsFichiers)
     % save the image:
     imwrite(F.cdata, sprintf('../resultats/resultatimage/%s_couleur.jpg',nomsFichiers));
     close(figure);
+    
+    %création des images avec ° pour debout et <| pour couché
     figure('visible', 'off')
     imshow(image)
     hold on
