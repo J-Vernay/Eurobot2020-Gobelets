@@ -16,10 +16,7 @@ function [imagePretraitee, mask] = pretraitement(image, espaceUtilise)
         
         RG = abs(R-G);
         mask = imbinarize(RG);
-        %figure;
-        %subplot(131);imshow(RG,[]);
-        %subplot(132);imshow(mask);
-        %subplot(133);imhist(RG);
+        
     elseif strcmp(espaceUtilise, 'hsv')
         hsv = rgb2hsv(image);
         H = hsv(:,:,1);

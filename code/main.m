@@ -36,13 +36,11 @@ end
 viderDossier('../resultats/caracteristiques');
 
 caracteristiques = cell(nbImages, 1);
-
 for i = 1:nbImages
     fprintf('Extraction %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
     caracteristiques{i} = extraction(imagesPretraitees(:,:,:,i),Espace);
     writetable(struct2table(caracteristiques{i}), sprintf('../resultats/caracteristiques/%s.txt',nomsFichiers(i)));
 end
-
 
 %% Classification
 
@@ -50,7 +48,7 @@ viderDossier('../resultats/sortie');
 dimensionimage=[480, 720];
 for i = 1:nbImages
     fprintf('Classification %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    sortieObjets{i} = classification(caracteristiques{i},dimensionimage);
+    sortieObjets{i} = classification(caracteristiques{i});
     writetable(struct2table(sortieObjets{i}),sprintf('../resultats/sortie/%s.txt',nomsFichiers(i)));
 end
 

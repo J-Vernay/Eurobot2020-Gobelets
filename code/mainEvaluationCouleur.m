@@ -4,19 +4,17 @@ if ~isfolder('../resultats')
     mkdir('../resultats');
 end
 
-% ////////////////////////////////////////////////////////////////
-% ////////////////////////////////////////////////////////////////
-
 
 %% Chargements des fichiers disponibles
 
-% On ne rÃ©cupÃ¨re que les images qui ont une vÃ©ritÃ© terrain.
+% On ne récupère que les images qui ont une vérité terrain.
 fichiers = dir('../verite_terrain/*.png');
 dimensions = [ 480, 720, 3 ];
 nbImages = length(fichiers);
 images = zeros([dimensions, nbImages]);
 verites = zeros([dimensions, nbImages]);
 nomsFichiers = strings(nbImages,1);
+Espace = 'lab';
 
 for i = 1:nbImages
     fprintf('Chargement %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
@@ -25,25 +23,6 @@ for i = 1:nbImages
     verites(:,:,:,i) = double(imread(sprintf('../verite_terrain/%s.png', nomsFichiers(i)))) / 255;
 end
 
-
-% ////////////////////////////////////////////////////////////////
-% ////////////////////////////////////////////////////////////////
-
-%% Chargement de la base d'image
-Espace = 'lab';
-fichiers = dir('../images/*.jpg');
-dimensions = [ 480, 720, 3 ];
-
-% 
-% nbImages = length(fichiers);
-% images = zeros([dimensions, nbImages]);
-% 
-% nomsFichiers = strings(nbImages,1);
-% for i = 1:nbImages
-%     fprintf('Chargement %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-%     images(:,:,:,i) = double(imread(strcat('../images/', fichiers(i).name))) / 255;
-%     [~, nomsFichiers(i), ~] = fileparts(fichiers(i).name);
-% end
 
 %% Prétraitement
 
@@ -78,13 +57,10 @@ comptErreur=0;
 comptRouge=0;
 comptVert=0;
 comptFond=0;
-for i = nbImages-1:nbImages-1
+for i = 1:nbImages
     fprintf('Classification %d/%d (%.1f%%)\n',i,nbImages, 100*(i-1)/nbImages);
-    sortieObjets{i} = classification(caracteristiques{i},dimensionimage);
+    sortieObjets{i} = classification(caracteristiques{i});
     writetable(struct2table(sortieObjets{i}),sprintf('../resultats/sortie/%s.txt',nomsFichiers(i)));
-    figure;imagesc(imagesPretraitees(:,:,:,i));
-    figure;imagesc(verites(:,:,:,i));
-    figure;imagesc(images(:,:,:,i));
     
     [~,taille]= size( sortieObjets{i} );
     i
